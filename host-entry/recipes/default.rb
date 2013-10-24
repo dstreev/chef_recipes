@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: repo
+# Cookbook Name:: host-entry
 # Recipe:: default
 #
 # Copyright 2013, David Streever
