@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-hostsfile_entry node['repo']['ip_address'] do
-  hostname  node['repo']['hostname']
+hostsfile_entry node['host-entry']['ip_address'] do
+  hostname  node['host-entry']['hostname']
   action    :create_if_missing
 end
