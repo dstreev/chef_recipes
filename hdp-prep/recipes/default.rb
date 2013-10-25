@@ -28,7 +28,7 @@ directory ".ssh" do
 	owner node['hdp-prep']['ssh']['user']
 	group node['hdp-prep']['ssh']['user']
 	mode 0700
-	action :create_if_missing
+	action :create
 end
 
 template ".ssh/id_rsa" do
