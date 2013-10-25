@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-node['hostentries'].each do |host-entry|
-	hostsfile_entry host-entry[:ip_address] do
-  		hostname  host-entry[:hostname]
+node['hostentries'].each do |hostentry|
+	hostsfile_entry hostentry[:ipaddress] do
+  		hostname  hostentry[:hostname]
   		action    :create_if_missing
 	end
 end
