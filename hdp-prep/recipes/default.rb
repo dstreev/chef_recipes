@@ -19,7 +19,7 @@
 
 include_recipe "selinux::disabled"
 include_recipe "ntp"
-include_recipe "iptables::diabled"
+include_recipe "iptables::disabled"
 include_recipe "java"
 
 # Distribute ssh keys.
