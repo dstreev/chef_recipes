@@ -5,4 +5,7 @@ description      "Support Chef Provisioning via Vagrant to add a hostfile entry.
 
 version          "0.1"
 
-depends 'selinux','ntp', 'iptables'
+depends 'selinux'
+depends 'ntp'
+depends 'iptables'
+depends 'java'
