@@ -37,6 +37,12 @@ include_recipe "ntp"
 include_recipe "iptables::disabled"
 include_recipe "java"
 
+# TODO: The keys when distributed for vagrant don't allow pdsh, because the vagrant private
+#        key already exists.  Need to add the hdp private key to the vagrant (alt) user account
+#        and configure an .ssh/config entry to use the alternate Identityfile for *.hortonworks.vagrant domains.
+
+# TODO: Clean up the default localhost entry in /etc/hosts that mangled by the vm.hostname process in vagrant.
+
 # Distribute ssh keys to 'root' and user (if different from root).
 directory "/root/.ssh" do
 	owner "root"
@@ -54,6 +60,16 @@ if node['hdp-prep']['ssh']['user'] != 'root' then
 	end
 end
 
+if node['hdp-prep']['ssh']['user'] != 'root' then 
+	template "/home/#{node['hdp-prep']['ssh']['user']}/.ssh/config" do
+  		source "ssh_config.erb"
+		variables(
+			:domain => node['hdp-prep']['domain']['name']
+		)
+		action :nothing
+	end
+end
+
 # Private Key
 template "/root/.ssh/id_rsa" do
   source "id_rsa"
@@ -63,7 +79,7 @@ template "/root/.ssh/id_rsa" do
 end
 	
 if node['hdp-prep']['ssh']['user'] != 'root' then 
-	template "/home/#{node['hdp-prep']['ssh']['user']}/.ssh/id_rsa" do
+	template "/home/#{node['hdp-prep']['ssh']['user']}/.ssh/id_hdp_rsa" do
 	  source "id_rsa"
 	  owner node['hdp-prep']['ssh']['user']
 	  group node['hdp-prep']['ssh']['user']
@@ -80,7 +96,7 @@ template "/root/.ssh/id_rsa.pub" do
 end
 
 if node['hdp-prep']['ssh']['user'] != 'root' then 
-	template "/home/#{node['hdp-prep']['ssh']['user']}/.ssh/id_rsa.pub" do
+	template "/home/#{node['hdp-prep']['ssh']['user']}/.ssh/id_hdp_rsa.pub" do
 	  source "id_rsa.pub"
 	  owner node['hdp-prep']['ssh']['user']
 	  group node['hdp-prep']['ssh']['user']
@@ -91,25 +107,25 @@ end
 # Account for home directory differences with 'root' and also
 # check to ensure you don't overwrite an existing 'authorized_keys' file
 # and that we don't write duplicate entries if the process is run again.
-	file "/root/.ssh/authorized_keys" do
-		owner "root"
-		group "root"
-		mode "0600"
-		action :create_if_missing
-	end
+file "/root/.ssh/authorized_keys" do
+	owner "root"
+	group "root"
+	mode "0600"
+	action :create_if_missing
+end
 
-	if !File.file?("/root/.ssh/chef_authorized_keys.do_not_delete") then
-		template "/root/.ssh/chef_authorized_keys.do_not_delete" do
-		  source "id_rsa.pub"
-		  owner "root"
-		  group "root"
-		  mode "0600"
-		end
+if !File.file?("/root/.ssh/chef_authorized_keys.do_not_delete") then
+	template "/root/.ssh/chef_authorized_keys.do_not_delete" do
+	  source "id_rsa.pub"
+	  owner "root"
+	  group "root"
+	  mode "0600"
+	end
 			  
-		bash "append-sshkey-for-vagrant" do
-			code "cat /root/.ssh/chef_authorized_keys.do_not_delete >> /root/.ssh/authorized_keys"
-		end
-	end 
+	bash "append-sshkey-for-vagrant" do
+		code "cat /root/.ssh/chef_authorized_keys.do_not_delete >> /root/.ssh/authorized_keys"
+	end
+end 
 	
 if node['hdp-prep']['ssh']['user'] != 'root' then 
 	file "/home/#{node['hdp-prep']['ssh']['user']}/.ssh/authorized_keys" do
