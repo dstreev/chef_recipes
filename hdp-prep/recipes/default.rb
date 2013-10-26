@@ -42,6 +42,9 @@ include_recipe "java"
 #        and configure an .ssh/config entry to use the alternate Identityfile for *.hortonworks.vagrant domains.
 
 # TODO: Clean up the default localhost entry in /etc/hosts that mangled by the vm.hostname process in vagrant.
+bash "cleanup-localhost" do
+	code "sed -i -e 's:$127\.0\.0\.1.*:127\.0\.0.1\ localhost:g' /etc/hosts"
+end
 
 # Distribute ssh keys to 'root' and user (if different from root).
 directory "/root/.ssh" do
