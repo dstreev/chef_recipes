@@ -43,7 +43,7 @@ include_recipe "java"
 
 # TODO: Clean up the default localhost entry in /etc/hosts that mangled by the vm.hostname process in vagrant.
 bash "cleanup-localhost" do
-	code "sed -i -e 's:^127\.0\.0\.1\ .*:127\.0\.0.1\ localhost:g' /etc/hosts"
+	code "sed -i -e 's:^127\.0\.0\.1.*:127\.0\.0.1\ localhost:g' /etc/hosts"
 end
 
 # Distribute ssh keys to 'root' and user (if different from root).
