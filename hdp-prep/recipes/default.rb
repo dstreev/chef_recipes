@@ -17,38 +17,118 @@
 # limitations under the License.
 #
 
+# Doesn't work with current 0.5.6 selinux recipe, should work with
+# 0.6.x but that recipe is broken for disabled. Once fixed, you should be
+# able to use attributes to control this setting. Just add this to the 
+# default_attributes of the role (of whatever):
+# 
+# 	"selinux": {
+#   		"state": "disabled"
+#   	}
+# -----
+# selinux_state "SELinux #{node['selinux']['state'].capitalize}" do
+#   action node['selinux']['state'].downcase.to_sym
+# end
+
+# Working selinux 0.5.6 version.
 include_recipe "selinux::disabled"
+
 include_recipe "ntp"
 include_recipe "iptables::disabled"
 include_recipe "java"
 
-# Distribute ssh keys.
-# Private Key
-directory ".ssh" do
-	owner node['hdp-prep']['ssh']['user']
-	group node['hdp-prep']['ssh']['user']
+# Distribute ssh keys to 'root' and user (if different from root).
+directory "/root/.ssh" do
+	owner "root"
+	group "root"
 	mode 0700
 	action :create
 end
 
-template ".ssh/id_rsa" do
+if node['hdp-prep']['ssh']['user'] != 'root' then 
+	directory "/home/#{node['hdp-prep']['ssh']['user']}/.ssh" do
+		owner node['hdp-prep']['ssh']['user']
+		group node['hdp-prep']['ssh']['user']
+		mode 0700
+		action :create
+	end
+end
+
+# Private Key
+template "/root/.ssh/id_rsa" do
   source "id_rsa"
-  owner node['hdp-prep']['ssh']['user']
-  group node['hdp-prep']['ssh']['user']
+  owner "root"
+  group "root"
   mode "0600"
 end
+	
+if node['hdp-prep']['ssh']['user'] != 'root' then 
+	template "/home/#{node['hdp-prep']['ssh']['user']}/.ssh/id_rsa" do
+	  source "id_rsa"
+	  owner node['hdp-prep']['ssh']['user']
+	  group node['hdp-prep']['ssh']['user']
+	  mode "0600"
+	end
+end
 
-template ".ssh/id_rsa.pub" do
+# Public Key
+template "/root/.ssh/id_rsa.pub" do
   source "id_rsa.pub"
-  owner node['hdp-prep']['ssh']['user']
-  group node['hdp-prep']['ssh']['user']
+  owner "root"
+  group "root"
   mode "0600"
 end
 
-template ".ssh/authorized_keys" do
-  source "id_rsa.pub"
-  owner node['hdp-prep']['ssh']['user']
-  group node['hdp-prep']['ssh']['user']
-  mode "0600"
+if node['hdp-prep']['ssh']['user'] != 'root' then 
+	template "/home/#{node['hdp-prep']['ssh']['user']}/.ssh/id_rsa.pub" do
+	  source "id_rsa.pub"
+	  owner node['hdp-prep']['ssh']['user']
+	  group node['hdp-prep']['ssh']['user']
+	  mode "0600"
+	end
 end
 
+# Account for home directory differences with 'root' and also
+# check to ensure you don't overwrite an existing 'authorized_keys' file
+# and that we don't write duplicate entries if the process is run again.
+	file "/root/.ssh/authorized_keys" do
+		owner "root"
+		group "root"
+		mode "0600"
+		action :create_if_missing
+	end
+
+	if !File.file?("/root/.ssh/chef_authorized_keys.do_not_delete") then
+		template "/root/.ssh/chef_authorized_keys.do_not_delete" do
+		  source "id_rsa.pub"
+		  owner "root"
+		  group "root"
+		  mode "0600"
+		end
+			  
+		bash "append-sshkey-for-vagrant" do
+			code "cat /root/.ssh/chef_authorized_keys.do_not_delete >> /root/.ssh/authorized_keys"
+		end
+	end 
+	
+if node['hdp-prep']['ssh']['user'] != 'root' then 
+	file "/home/#{node['hdp-prep']['ssh']['user']}/.ssh/authorized_keys" do
+		owner node['hdp-prep']['ssh']['user']
+		group node['hdp-prep']['ssh']['user']
+		mode "0600"
+		action :create_if_missing
+	end
+
+	if !File.file?("/home/#{node['hdp-prep']['ssh']['user']}/.ssh/chef_authorized_keys.do_not_delete") then
+		template "/home/#{node['hdp-prep']['ssh']['user']}/.ssh/chef_authorized_keys.do_not_delete" do
+		  source "id_rsa.pub"
+		  owner node['hdp-prep']['ssh']['user']
+		  group node['hdp-prep']['ssh']['user']
+		  mode "0600"
+		end
+			  
+		bash "append-sshkey-for-vagrant" do
+			code "cat /home/#{node['hdp-prep']['ssh']['user']}/.ssh/chef_authorized_keys.do_not_delete >> /home/#{node['hdp-prep']['ssh']['user']}/.ssh/authorized_keys"
+		end
+	end 
+end
