@@ -199,6 +199,9 @@ bash "repo-sync-HDP2" do
 	user "root"
 	code "reposync -r HDP-2.x -p #{baseRepoDir}/HDP/centos6/2.x/GA --norepopath"
 end
+bash "create-repo-HDP2-Updates-1-3-2" do
+	code "createrepo --update #{baseRepoDir}/HDP/centos6/1.x/updates/1.3.2.0"
+end
 bash "create-repo-HDP2" do
 	code "createrepo --update #{baseRepoDir}/HDP/centos6/2.x/GA"
 end
@@ -206,9 +209,6 @@ end
 bash "repo-sync-HDP2-Updates" do
 	user "root"
 	code "reposync -r Updates-HDP-2.x -p #{baseRepoDir}/HDP/centos6/2.x/updates --norepopath"
-end
-bash "create-repo-HDP2-Updates-1-3-2" do
-	code "createrepo --update #{baseRepoDir}/HDP/centos6/2.x/updates/1.3.2.0"
 end
 bash "create-repo-HDP2-Updates-2-0-6" do
 	code "createrepo --update #{baseRepoDir}/HDP/centos6/2.x/updates/2.0.6.0"
