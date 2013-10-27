@@ -29,7 +29,7 @@ yum_package "ambari-server" do
 end
 
 if node['ambari']['jdk']['alt'] then
-	bash "ambari-server_setup with alt JDK" do
+	bash "ambari-server_setup with alt JDK @ #{#{node['ambari']['jdk']['home']}" do
 		code "sudo ambari-server setup -j #{node['ambari']['jdk']['home']} -s"
 	end
 elsif
