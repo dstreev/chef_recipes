@@ -28,8 +28,14 @@ yum_package "ambari-server" do
   flush_cache [:before]
 end
 
-bash "ambari-server_setup" do
-  code "sudo ambari-server setup -s"
+if node['ambari']['jdk']['alt'] then
+	bash "ambari-server_setup" do
+		code "sudo ambari-server setup -j #{node['ambari']['jdk']['home']} -s"
+	end
+elsif
+	bash "ambari-server_setup" do
+		code "sudo ambari-server setup -s"
+	end
 end
 
 bash "ambari-server_start" do

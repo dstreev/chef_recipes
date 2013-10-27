@@ -6,3 +6,7 @@ default['ambari']['remote_repo_file'] = 'http://public-repo-1.hortonworks.com/am
 
 # Options are hdp_1.3.2, hdp_2.0-BETA, hdp_2.0
 default['ambari']['localrepo']['version'] = 'hdp_1.3.2'
+
+# Specify an alternate JDK.
+default['ambari']['jdk']['alt'] = false
+default['ambari']['jdk']['home'] = '/usr/lib/jvm/jdk1.7.0_45'
