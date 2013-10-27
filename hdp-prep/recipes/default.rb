@@ -79,10 +79,23 @@ if node['hdp-prep']['local-repo']['use'] then
 	file "/etc/yum.repos.d/CentOS-Vault.repo" do
 		action :delete
 	end
+	file "/etc/yum.repos.d/epel.repo" do
+		action :delete
+	end
 
 	log "Restoring CentOS-Base.repo file with Local Repo References"
 	template "/etc/yum.repos.d/CentOS-Base.repo" do
   		source "CentOS-Base.repo.erb"
+		owner "root"
+		group "root"
+	  	mode "0644"
+		variables(
+			:repoBaseUrl => node['hdp-prep']['local-repo']['url']
+		)
+	end
+	log "Restoring epel.repo file with Local Repo References"
+	template "/etc/yum.repos.d/epel.repo" do
+  		source "epel.repo.erb"
 		owner "root"
 		group "root"
 	  	mode "0644"
