@@ -25,6 +25,11 @@ remote_file '/etc/yum.repos.d/ambari.repo' do
   action :create_if_missing
 end
 
+yum_package "pdsh" do
+	action :install
+	flush_cache [:before]
+end
+
 yum_package "ambari-server" do
   action :install
   flush_cache [:before]
