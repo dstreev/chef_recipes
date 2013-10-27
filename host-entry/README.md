@@ -8,10 +8,7 @@ Need to supply a set of host entries in the following:
 # Attributes
 
 ```
-"hostentries": [
-      {"ipaddress":"192.168.90.1", "something.example.com"},
-      {"ipaddress":"192.168.90.2", "hostname":"more.example.com"}
-    ]
+
 ```
 
 # Usage

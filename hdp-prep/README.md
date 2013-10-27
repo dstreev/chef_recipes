@@ -1,17 +1,19 @@
 # Description
-Used to add extra host entries to the /etc/hosts file of the target server.
+Prepare an OS for an HDP installation.
 
 # Requirements
-Need to supply a set of host entries in the following:
+Prepare an OS for an HDP installation.  This recipe will do things like distribute a password-less ssh-key, disable selinux, turn-off iptables, install local repos (if desired), install jdk, and install ntp.
 
+You will need the private ssh-key [here](templates/default/id_rsa) for your ambari installation and ssh passwordless access to the servers built with this recipe.
 
 # Attributes
 
 ```
-"hostentries": [
-      {"ipaddress":"192.168.90.1", "something.example.com"},
-      {"ipaddress":"192.168.90.2", "hostname":"more.example.com"}
-    ]
+default['hdp-prep']['ssh']['user'] = 'root'
+default['hdp-prep']['domain']['name'] = 'hortonworks.vagrant'
+
+default['hdp-prep']['local-repo']['use'] = false
+default['hdp-prep']['local-repo']['url'] = 'undefined'
 ```
 
 # Usage
