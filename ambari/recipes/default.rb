@@ -28,6 +28,23 @@ yum_package "ambari-server" do
   flush_cache [:before]
 end
 
+# Setup the Local Repos
+if node['ambari']['repo']['local_url'] then
+	log "Configure Ambari for Local Repo #{node['ambari']['repo']['local_url']}"
+	stacks = ["1.3.2","2.0.6"]
+	stacks.each do |stack|
+		template "/var/lib/ambari-server/resources/stacks/HDPLocal/#{stack}/repos/repoinfo.xml" do
+  			source "repoinfo.xml.#{stack}.erb"
+			owner "root"
+			group "root"
+		  	mode "0644"
+			variables(
+				:localRepoUrl => node['ambari']['repo']['local_url']
+			)
+		end	
+	end
+end
+
 if node['ambari']['jdk']['alt'] then
 	log " Ambari configured for alt JDK: #{node['ambari']['jdk']['home']}"
 	
