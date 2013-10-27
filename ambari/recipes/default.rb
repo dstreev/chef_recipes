@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+log "Ambari Remote Repo File: #{node['ambari']['remote_repo_file']}"
+
 remote_file '/etc/yum.repos.d/ambari.repo' do
   source node['ambari']['remote_repo_file']
   mode '00644'
