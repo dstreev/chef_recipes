@@ -63,6 +63,28 @@ if node['hdp-prep']['ssh']['user'] != 'root' then
 	end
 end
 
+if node['hdp-prep']['local-repo']['use'] then
+	log "Configuring for Local Repo"
+	
+	log "Deleting CentOS*.repo Files."
+	file "/etc/yum.repos.d/CentOS*.repo" do
+		owner "root"
+		group "root"
+		action :delete
+	end
+
+	log "Restoring CentOS-Base.repo file with Local Repo References"
+	template "/etc/yum.repos.d/CentOS-Base.repo" do
+  		source "CentOS-Base.repo.erb"
+		owner node['hdp-prep']['ssh']['user']
+		group node['hdp-prep']['ssh']['user']
+	  	mode "0600"
+		variables(
+			:repoBaseUrl => node['hdp-prep']['local-repo']['url']
+		)
+	end
+end
+
 if node['hdp-prep']['ssh']['user'] != 'root' then 
 	template "/home/#{node['hdp-prep']['ssh']['user']}/.ssh/config" do
   		source "ssh_config.erb"
