@@ -158,17 +158,20 @@ bash "repo-sync-HDP-Updates" do
 	user "root"
 	code "reposync -r Updates-HDP-1.x -p #{baseRepoDir}/HDP/centos6/1.x/updates --norepopath"
 end
-bash "create-repo-HDP-Updates" do
-	code "createrepo --update #{baseRepoDir}/HDP/centos6/1.x/updates"
+
+bash "create-repo-HDP-Updates-1-3-2" do
+  code "createrepo --update #{baseRepoDir}/HDP/centos6/1.x/updates/1.3.2.0"
+end
+
+bash "create-repo-HDP-Updates-1-3-3" do
+  code "createrepo --update #{baseRepoDir}/HDP/centos6/1.x/updates/1.3.3.0"
 end
 
 bash "repo-sync-HDP2" do
 	user "root"
 	code "reposync -r HDP-2.x -p #{baseRepoDir}/HDP/centos6/2.x/GA --norepopath"
 end
-bash "create-repo-HDP2-Updates-1-3-2" do
-	code "createrepo --update #{baseRepoDir}/HDP/centos6/1.x/updates/1.3.2.0"
-end
+
 bash "create-repo-HDP2" do
 	code "createrepo --update #{baseRepoDir}/HDP/centos6/2.x/GA"
 end
@@ -177,25 +180,10 @@ bash "repo-sync-HDP2-Updates" do
 	user "root"
 	code "reposync -r Updates-HDP-2.x -p #{baseRepoDir}/HDP/centos6/2.x/updates --norepopath"
 end
+
 bash "create-repo-HDP2-Updates-2-0-6" do
 	code "createrepo --update #{baseRepoDir}/HDP/centos6/2.x/updates/2.0.6.0"
 end
-
-# bash "repo-sync-HDP-UTILS-15" do
-# 	user "root"
-# 	code "reposync -r HDP-UTILS-1.1.0.15 -p #{baseRepoDir}/HDP-UTILS-1.1.0.15/repos/centos6 --norepopath"
-# end
-# bash "create-repo-HDP-UTILS-15" do
-# 	code "createrepo --update #{baseRepoDir}/HDP-UTILS-1.1.0.15/repos/centos6"
-# end
-
-# bash "repo-sync-HDP-1.3.0.0-GA" do
-# 	user "root"
-# 	code "reposync -r HDP-1.3.0.0 -p #{baseRepoDir}/HDP/centos6/1.x/GA/1.3.0.0 --norepopath"
-# end
-# bash "create-repo-HDP-1-3-0" do
-# 	code "createrepo --update #{baseRepoDir}/HDP/centos6/1.x/GA/1.3.0.0"
-# end
 
 bash "repo-sync-epel" do
 	user "root"
