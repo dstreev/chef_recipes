@@ -57,6 +57,13 @@ yum_package "yum-plugin-priorities" do
   flush_cache [:before]
 end
 
+template "/etc/yum/pluginconf.d/priorities.conf" do
+  source "priorities.conf.erb"
+  owner "root"
+  group "root"
+  mode "0644"
+end
+
 # Distribute ssh keys to 'root' and user (if different from root).
 directory "/root/.ssh" do
 	owner "root"
