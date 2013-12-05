@@ -114,39 +114,6 @@ remote_file node['hdp_repo']['jdk_bin'] do
 	action :create_if_missing
 end
 		
-# rm $BASE_REPO_DIR/local.yum.repos.d/CentOS-Base.repo
-# wget https://raw.github.com/dstreev/hdp-local-repo/master/templates/CentOS-Base.repo -O $BASE_REPO_DIR/local.yum.repos.d/CentOS-Base.repo
-# remote_file "#{localyumDir}/CentOS-Base.repo" do
-# 	source "https://raw.github.com/dstreev/hdp-local-repo/master/templates/CentOS-Base.repo"
-# 	mode '00644'
-# 	action :create_if_missing
-# end
-
-
-# rm $BASE_REPO_DIR/local.yum.repos.d/epel.repo
-# wget https://raw.github.com/dstreev/hdp-local-repo/master/templates/epel.repo -O $BASE_REPO_DIR/local.yum.repos.d/epel.repo
-# remote_file "#{localyumDir}/epel.repo" do
-# 	source "https://raw.github.com/dstreev/hdp-local-repo/master/templates/epel.repo"
-# 	mode '00644'
-# 	action :create_if_missing
-# end
-
-
-# sed -i bak -e "s:http\://public-repo-1.hortonworks.com:http\://$HOSTNAME/repos:g" $BASE_REPO_DIR/local.yum.repos.d/ambari.repo
-# sed -i bak -e "s:!local.repo.host!:$HOSTNAME:g" $BASE_REPO_DIR/local.yum.repos.d/CentOS-Base.repo
-# sed -i bak -e "s:!local.repo.host!:$HOSTNAME:g" $BASE_REPO_DIR/local.yum.repos.d/epel.repo
-
-# bash "fix-ambari-repo" do
-# 	#code "sed -i -e 's:http\://public-repo-1.hortonworks.com:http\://#{localRepoHost}/repos:g' ${ambariRepoArtifact}"
-# 	code "sed -i -e 's:!local.repo.host!:#{localRepoHost}:g' #{localyumDir}/CentOS-Base.repo"
-# 	code "sed -i -e 's:!local.repo.host!:#{localRepoHost}:g' #{localyumDir}/epel.repo"
-# end
-
-# epel
-# baseurl=http://download.fedoraproject.org/pub/epel/6/$basearch (x86_64)
-# if [ ! -d  $BASE_REPO_DIR/pub/epel/6/x86_64 ]; then
-#   mkdir -p $BASE_REPO_DIR/pub/epel/6/x86_64
-# fi
 directory "#{baseRepoDir}/pub/epel/6/x86_64" do
 	owner "root"
 	group "root"
@@ -227,56 +194,55 @@ end
 # 	code "createrepo --update #{baseRepoDir}/HDP/centos6/1.x/GA/1.3.0.0"
 # end
 
-#bash "repo-sync-epel" do
-#	user "root"
-#	code "reposync -r epel -p #{baseRepoDir}/pub/epel/6/x86_64 --norepopath"
-#end
-#bash "create-repo-epel" do
-#	code "createrepo --update #{baseRepoDir}/pub/epel/6/x86_64"
-#end
+bash "repo-sync-epel" do
+	user "root"
+	code "reposync -r epel -p #{baseRepoDir}/pub/epel/6/x86_64 --norepopath"
+end
+bash "create-repo-epel" do
+	code "createrepo --update #{baseRepoDir}/pub/epel/6/x86_64"
+end
 
-#bash "repo-sync-centos" do
-#	user "root"
-#	code "reposync -r base -p #{baseRepoDir}/centos/6/os/x86_64 --norepopath"
-#end
-#bash "create-repo-centos" do
-#	code "createrepo --update #{baseRepoDir}/centos/6/os/x86_64"
-#end
+bash "repo-sync-centos" do
+	user "root"
+	code "reposync -r base -p #{baseRepoDir}/centos/6/os/x86_64 --norepopath"
+end
+bash "create-repo-centos" do
+	code "createrepo --update #{baseRepoDir}/centos/6/os/x86_64"
+end
 
-# Having issues with 1 package in this and it's causing everything to fail.
-#bash "repo-sync-centos-updates" do
-#	user "root"
-#	code "reposync -r updates -p #{baseRepoDir}/centos/6/updates/x86_64 --norepopath"
-#	returns [0,1]
-#end
-#bash "create-repo-centos-updates" do
-#	code "createrepo --update #{baseRepoDir}/centos/6/updates/x86_64"
-#end
+bash "repo-sync-centos-updates" do
+	user "root"
+	code "reposync -r updates -p #{baseRepoDir}/centos/6/updates/x86_64 --norepopath"
+	returns [0,1]
+end
+bash "create-repo-centos-updates" do
+	code "createrepo --update #{baseRepoDir}/centos/6/updates/x86_64"
+end
 
-#bash "repo-sync-centos-extras" do
-#	user "root"
-#	code "reposync -r extras -p #{baseRepoDir}/centos/6/extras/x86_64 --norepopath"
-#	returns [0,1]
-#end
-#bash "create-repo-centos-extras" do
-#	code "createrepo --update #{baseRepoDir}/centos/6/extras/x86_64"
-#end
+bash "repo-sync-centos-extras" do
+	user "root"
+	code "reposync -r extras -p #{baseRepoDir}/centos/6/extras/x86_64 --norepopath"
+	returns [0,1]
+end
+bash "create-repo-centos-extras" do
+	code "createrepo --update #{baseRepoDir}/centos/6/extras/x86_64"
+end
 
-#bash "repo-sync-centos-plus" do
-#	user "root"
-#	code "reposync -r centosplus -p #{baseRepoDir}/centos/6/centosplus/x86_64 --norepopath"
-#end
-#bash "create-repo-centosplus" do
-#	code "createrepo --update #{baseRepoDir}/centos/6/centosplus/x86_64"
-#end
+bash "repo-sync-centos-plus" do
+	user "root"
+	code "reposync -r centosplus -p #{baseRepoDir}/centos/6/centosplus/x86_64 --norepopath"
+end
+bash "create-repo-centosplus" do
+	code "createrepo --update #{baseRepoDir}/centos/6/centosplus/x86_64"
+end
 
-#bash "repo-sync-centos-contrib" do
-#	user "root"
-#	code "reposync -r contrib -p #{baseRepoDir}/centos/6/contrib/x86_64 --norepopath"
-#end
-#bash "create-repo-centos-contrib" do
-#	code "createrepo --update #{baseRepoDir}/centos/6/contrib/x86_64"
-#end
+bash "repo-sync-centos-contrib" do
+	user "root"
+	code "reposync -r contrib -p #{baseRepoDir}/centos/6/contrib/x86_64 --norepopath"
+end
+bash "create-repo-centos-contrib" do
+	code "createrepo --update #{baseRepoDir}/centos/6/contrib/x86_64"
+end
 
 directory "#{baseRepoDir}/ambari/centos6/RPM-GPG-KEY" do
 	owner "root"
