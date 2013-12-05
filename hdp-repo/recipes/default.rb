@@ -48,10 +48,10 @@ bash "yum-repolist" do
 	code "yum repolist"
 end
 
-yum_package "epel-release" do
-	action :install
-	flush_cache [:before]
-end
+#yum_package "epel-release" do
+#	action :install
+#	flush_cache [:before]
+#end
 
 yum_package "yum-utils" do
 	action :install
@@ -227,56 +227,56 @@ end
 # 	code "createrepo --update #{baseRepoDir}/HDP/centos6/1.x/GA/1.3.0.0"
 # end
 
-bash "repo-sync-epel" do
-	user "root"
-	code "reposync -r epel -p #{baseRepoDir}/pub/epel/6/x86_64 --norepopath"
-end
-bash "create-repo-epel" do
-	code "createrepo --update #{baseRepoDir}/pub/epel/6/x86_64"
-end
+#bash "repo-sync-epel" do
+#	user "root"
+#	code "reposync -r epel -p #{baseRepoDir}/pub/epel/6/x86_64 --norepopath"
+#end
+#bash "create-repo-epel" do
+#	code "createrepo --update #{baseRepoDir}/pub/epel/6/x86_64"
+#end
 
-bash "repo-sync-centos" do
-	user "root"
-	code "reposync -r base -p #{baseRepoDir}/centos/6/os/x86_64 --norepopath"
-end
-bash "create-repo-centos" do
-	code "createrepo --update #{baseRepoDir}/centos/6/os/x86_64"
-end
+#bash "repo-sync-centos" do
+#	user "root"
+#	code "reposync -r base -p #{baseRepoDir}/centos/6/os/x86_64 --norepopath"
+#end
+#bash "create-repo-centos" do
+#	code "createrepo --update #{baseRepoDir}/centos/6/os/x86_64"
+#end
 
 # Having issues with 1 package in this and it's causing everything to fail.
-bash "repo-sync-centos-updates" do
-	user "root"
-	code "reposync -r updates -p #{baseRepoDir}/centos/6/updates/x86_64 --norepopath"
-	returns [0,1]
-end
-bash "create-repo-centos-updates" do
-	code "createrepo --update #{baseRepoDir}/centos/6/updates/x86_64"
-end
+#bash "repo-sync-centos-updates" do
+#	user "root"
+#	code "reposync -r updates -p #{baseRepoDir}/centos/6/updates/x86_64 --norepopath"
+#	returns [0,1]
+#end
+#bash "create-repo-centos-updates" do
+#	code "createrepo --update #{baseRepoDir}/centos/6/updates/x86_64"
+#end
 
-bash "repo-sync-centos-extras" do
-	user "root"
-	code "reposync -r extras -p #{baseRepoDir}/centos/6/extras/x86_64 --norepopath"
-	returns [0,1]
-end
-bash "create-repo-centos-extras" do
-	code "createrepo --update #{baseRepoDir}/centos/6/extras/x86_64"
-end
+#bash "repo-sync-centos-extras" do
+#	user "root"
+#	code "reposync -r extras -p #{baseRepoDir}/centos/6/extras/x86_64 --norepopath"
+#	returns [0,1]
+#end
+#bash "create-repo-centos-extras" do
+#	code "createrepo --update #{baseRepoDir}/centos/6/extras/x86_64"
+#end
 
-bash "repo-sync-centos-plus" do
-	user "root"
-	code "reposync -r centosplus -p #{baseRepoDir}/centos/6/centosplus/x86_64 --norepopath"
-end
-bash "create-repo-centosplus" do
-	code "createrepo --update #{baseRepoDir}/centos/6/centosplus/x86_64"
-end
+#bash "repo-sync-centos-plus" do
+#	user "root"
+#	code "reposync -r centosplus -p #{baseRepoDir}/centos/6/centosplus/x86_64 --norepopath"
+#end
+#bash "create-repo-centosplus" do
+#	code "createrepo --update #{baseRepoDir}/centos/6/centosplus/x86_64"
+#end
 
-bash "repo-sync-centos-contrib" do
-	user "root"
-	code "reposync -r contrib -p #{baseRepoDir}/centos/6/contrib/x86_64 --norepopath"
-end
-bash "create-repo-centos-contrib" do
-	code "createrepo --update #{baseRepoDir}/centos/6/contrib/x86_64"
-end
+#bash "repo-sync-centos-contrib" do
+#	user "root"
+#	code "reposync -r contrib -p #{baseRepoDir}/centos/6/contrib/x86_64 --norepopath"
+#end
+#bash "create-repo-centos-contrib" do
+#	code "createrepo --update #{baseRepoDir}/centos/6/contrib/x86_64"
+#end
 
 directory "#{baseRepoDir}/ambari/centos6/RPM-GPG-KEY" do
 	owner "root"

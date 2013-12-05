@@ -52,6 +52,7 @@ if node['ambari']['repo']['local_url'] then
 	end
 end
 
+
 if node['ambari']['jdk']['alt'] then
 	log " Ambari configured for alt JDK: #{node['ambari']['jdk']['home']}"
 	

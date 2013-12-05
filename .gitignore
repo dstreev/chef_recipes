@@ -24,3 +24,6 @@ cookbooks
 .vagrant
 
 *.lock
+
+.idea
+*.iml
