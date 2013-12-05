@@ -48,10 +48,10 @@ bash "yum-repolist" do
 	code "yum repolist"
 end
 
-#yum_package "epel-release" do
-#	action :install
-#	flush_cache [:before]
-#end
+yum_package "epel-release" do
+  action :install
+  flush_cache [:before]
+end
 
 yum_package "yum-utils" do
 	action :install
