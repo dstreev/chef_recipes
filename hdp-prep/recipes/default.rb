@@ -46,6 +46,17 @@ bash "cleanup-localhost" do
 	code "sed -i -e 's:^127\.0\.0\.1.*:127\.0\.0.1\ localhost:g' /etc/hosts"
 end
 
+#
+yum_package "yum-priorities" do
+  action :install
+  flush_cache [:before]
+end
+
+yum_package "yum-plugin-priorities" do
+  action :install
+  flush_cache [:before]
+end
+
 # Distribute ssh keys to 'root' and user (if different from root).
 directory "/root/.ssh" do
 	owner "root"
