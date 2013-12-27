@@ -188,6 +188,7 @@ end
 bash "repo-sync-epel" do
 	user "root"
 	code "reposync -r epel -p #{baseRepoDir}/pub/epel/6/x86_64 --norepopath"
+	returns [0,1]
 end
 bash "create-repo-epel" do
 	code "createrepo --update #{baseRepoDir}/pub/epel/6/x86_64"
@@ -196,6 +197,7 @@ end
 bash "repo-sync-centos" do
 	user "root"
 	code "reposync -r base -p #{baseRepoDir}/centos/6/os/x86_64 --norepopath"
+	returns [0,1]
 end
 bash "create-repo-centos" do
 	code "createrepo --update #{baseRepoDir}/centos/6/os/x86_64"
