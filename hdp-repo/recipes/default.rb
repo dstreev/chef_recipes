@@ -125,6 +125,7 @@ end
 bash "repo-sync-ambari" do
 	user "root"
 	code "reposync -r ambari-1.x -p #{baseRepoDir}/ambari/centos6/1.x/GA --norepopath"
+  returns [0,1]
 end
 bash "create-repo-ambari" do
 	code "createrepo --update #{baseRepoDir}/ambari/centos6/1.x/GA"
@@ -133,6 +134,7 @@ end
 bash "repo-sync-Ambari-Updates" do
 	user "root"
 	code "reposync -r Updates-ambari-1.x -p #{baseRepoDir}/ambari/centos6/1.x/updates"
+  returns [0,1]
 end
 bash "create-repo-ambari-updates" do
 	code "createrepo --update #{baseRepoDir}/ambari/centos6/1.x/updates"
@@ -141,6 +143,7 @@ end
 bash "repo-sync-HDP-UTILS-16" do
 	user "root"
 	code "reposync -r HDP-UTILS-1.1.0.16 -p #{baseRepoDir}/HDP-UTILS-1.1.0.16/repos/centos6 --norepopath"
+  returns [0,1]
 end
 bash "create-repo-HDP-UTILS-16" do
 	code "createrepo --update #{baseRepoDir}/HDP-UTILS-1.1.0.16/repos/centos6"
@@ -149,6 +152,7 @@ end
 bash "repo-sync-HDP" do
 	user "root"
 	code "reposync -r HDP-1.x -p #{baseRepoDir}/HDP/centos6/1.x/GA --norepopath"
+  returns [0,1]
 end
 bash "create-repo-HDP" do
 	code "createrepo --update #{baseRepoDir}/HDP/centos6/1.x/GA"
@@ -157,6 +161,7 @@ end
 bash "repo-sync-HDP-Updates" do
 	user "root"
 	code "reposync -r Updates-HDP-1.x -p #{baseRepoDir}/HDP/centos6/1.x/updates --norepopath"
+  returns [0,1]
 end
 
 bash "create-repo-HDP-Updates-1-3-2" do
@@ -170,6 +175,7 @@ end
 bash "repo-sync-HDP2" do
 	user "root"
 	code "reposync -r HDP-2.x -p #{baseRepoDir}/HDP/centos6/2.x/GA --norepopath"
+  returns [0,1]
 end
 
 bash "create-repo-HDP2" do
@@ -179,6 +185,7 @@ end
 bash "repo-sync-HDP2-Updates" do
 	user "root"
 	code "reposync -r Updates-HDP-2.x -p #{baseRepoDir}/HDP/centos6/2.x/updates --norepopath"
+  returns [0,1]
 end
 
 bash "create-repo-HDP2-Updates-2-0-6" do
