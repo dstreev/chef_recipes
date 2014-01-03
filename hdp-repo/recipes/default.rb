@@ -192,14 +192,14 @@ bash "create-repo-HDP2-Updates-2-0-6" do
 	code "createrepo --update #{baseRepoDir}/HDP/centos6/2.x/updates/2.0.6.0"
 end
 
-bash "repo-sync-epel" do
-	user "root"
-	code "reposync -r epel -p #{baseRepoDir}/pub/epel/6/x86_64 --norepopath"
-	returns [0,1]
-end
-bash "create-repo-epel" do
-	code "createrepo --update #{baseRepoDir}/pub/epel/6/x86_64"
-end
+#bash "repo-sync-epel" do
+#	user "root"
+#	code "reposync -r epel -p #{baseRepoDir}/pub/epel/6/x86_64 --norepopath"
+#	returns [0,1]
+#end
+#bash "create-repo-epel" do
+#	code "createrepo --update #{baseRepoDir}/pub/epel/6/x86_64"
+#end
 
 bash "repo-sync-centos" do
 	user "root"
