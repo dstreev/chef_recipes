@@ -54,7 +54,7 @@ Make sure you establish a FQDN for the host, this will be used later in the proc
 #### Step #2: Additional Components to Install on the OS:
 1. Chef-solo: Details can be found here: https://learnchef.opscode.com/quickstart/workstation-setup/#linux
   1. Short story, commands:
-  ```
+```
 curl -L https://www.opscode.com/chef/install.sh | sudo bash
 echo 'export PATH="/opt/chef/embedded/bin:$PATH"' >> ~/.bash_profile && source ~/.bash_profile
 ```
