@@ -194,7 +194,7 @@ end
 
 bash "repo-sync-epel" do
 	user "root"
-	code "reposync -r epel -p #{baseRepoDir}/pub/epel/6/x86_64 --norepopath"
+	code "reposync -n -r epel -p #{baseRepoDir}/pub/epel/6/x86_64 --norepopath"
 	returns [0,1]
 end
 bash "create-repo-epel" do
