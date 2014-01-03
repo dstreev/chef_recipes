@@ -54,24 +54,21 @@ Make sure you establish a FQDN for the host, this will be used later in the proc
 #### Step #2: Additional Components to Install on the OS:
 1. Chef-solo: Details can be found here: https://learnchef.opscode.com/quickstart/workstation-setup/#linux
   1. Short story, commands:
-```
-curl -L https://www.opscode.com/chef/install.sh | sudo bash
-echo 'export PATH="/opt/chef/embedded/bin:$PATH"' >> ~/.bash_profile && source ~/.bash_profile
-```
+
+`curl -L https://www.opscode.com/chef/install.sh | sudo bash`
+`echo 'export PATH="/opt/chef/embedded/bin:$PATH"' >> ~/.bash_profile && source ~/.bash_profile`
+
 2. Install git
-  1. yum install git
+`yum install git`
 3. Install the Chef Librarian.  This step will allow us to build and us a local Chef-repo for the yum repo buildout. Detail here: https://github.com/applicationsonline/librarian-chef
-```
-gem install librarian-chef
-```
+`gem install librarian-chef`
+
 #### Step #3: Control Files
 Next we need to build a few control files that will help our system find the bit and pieces needed to build out the system.
 
 Pick a root directory, it's location isn't important, as long as we are consistent from this point on:
-```
-mkdir hdp_repo_init
-cd hdp_repo_init
-```
+`mkdir hdp_repo_init`
+`cd hdp_repo_init`
 
 The assumption going forward is that all commands will be run from this newly created directory.
 
