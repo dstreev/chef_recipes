@@ -2,7 +2,7 @@
 # Cookbook Name:: ambari
 # Recipe:: default
 #
-# Copyright 2013, Example Com
+# Copyright 2013, David W. Streever
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,242 +20,203 @@
 include_recipe "apache2"
 include_recipe "iptables::disabled"
 
-localRepoHost = node['hdp_repo']['repo_host']
-ambariRepoArtifact = node['hdp_repo']['ambari_repo_artifact']
-baseRepoDir = node['hdp_repo']['base_repo_dir']
-localyumDir = node['hdp_repo']['local_yum_repos_dir']
-
-
-remote_file node['hdp_repo']['ambari_repo_d'] do
-  source node['hdp_repo']['ambari_repo_source']
-  mode '00644'
-  action :create
-end
-
-# Get the hdp.repo for for 1.x and 2.x
-remote_file node['hdp_repo']['hdp_repo']['1.x']['d'] do
-  source node['hdp_repo']['hdp_repo']['1.x']['source']
-  mode '00644'
-  action :create
-end
-remote_file node['hdp_repo']['hdp_repo']['2.x']['d'] do
-  source node['hdp_repo']['hdp_repo']['2.x']['source']
-  mode '00644'
-  action :create
-end
+baseRepoDir = node['hdp_repo']['base_repo']['dir']
+test1 = node['hdp_repo']['ambari']['version']
+test2 = node['hdp_repo']['os_base']['item']
 
 bash "yum-repolist" do
-	code "yum repolist"
+  code "yum repolist"
 end
 
-yum_package "epel-release" do
+yum_package "yum-utils" do
   action :install
   flush_cache [:before]
 end
 
-yum_package "yum-utils" do
-	action :install
-	flush_cache [:before]
-end
-
 yum_package "createrepo" do
-	action :install
-	flush_cache [:before]
+  action :install
+  flush_cache [:before]
 end
 
-directory node['hdp_repo']['local_yum_repos_dir'] do
-	owner "root"
-	group "root"
-	recursive true
-	mode 0755
-	action :create
+# Directory to store pre-configured repos that point to the local repo host.
+directory node['hdp_repo']['yum_repos']['local_dir'] do
+  owner "root"
+  group "root"
+  recursive true
+  mode 0755
+  action :create
 end
 
-directory node['hdp_repo']['artifacts_dir'] do
-	owner "root"
-	group "root"
-	recursive true
-	mode 0755
-	action :create
-end
-
-remote_file node['hdp_repo']['jdk_bin'] do
-	source node['hdp_repo']['jdk_source_bin']
-	owner "root"
-	owner "root"
-	mode '00644'
-	action :create_if_missing
+directory node['hdp_repo']['base_tgz']['dir'] do
+  owner "root"
+  group "root"
+  recursive true
+  mode 0755
+  action :create
 end
 
 
-# Take the ambari.repo we've downloaded and place it on the repo for distribution.
-# AHO. Removed baseurl= because need to repolace host name in both baseurl and gpgkey= fields.
-#cp /etc/yum.repos.d/ambari.repo $BASE_REPO_DIR/local.yum.repos.d/
-# === Using Templates instead
-# remote_file node['hdp_repo']['ambari_repo_artifact'] do
-# 	source "file://#{node['hdp_repo']['ambari_repo_d']}"
-# 	mode '00644'
-# 	action :create_if_missing
-# end
+directory node['hdp_repo']['artifacts']['dir'] do
+  owner "root"
+  group "root"
+  recursive true
+  mode 0755
+  action :create
+end
 
-template node['hdp_repo']['ambari_repo_artifact'] do
+remote_file node['hdp_repo']['jdk']['bin'] do
+  source node['hdp_repo']['jdk']['source_bin']
+  owner "root"
+  owner "root"
+  mode 0644
+  action :create_if_missing
+end
+
+template "#{node['hdp_repo']['yum_repos']['ambari']}" do
 	source "ambari.repo.erb"
 	owner "root"
 	group "root"
-  	mode "0644"
-	variables(
-		:localRepoHostRepo => "#{node['hdp_repo']['repo_host']}/repos"
-	)
-end	
-
-remote_file node['hdp_repo']['jdk_bin'] do
-	source node['hdp_repo']['jdk_source_bin']
-	mode '00644'
-	action :create_if_missing
-end
-		
-directory "#{baseRepoDir}/pub/epel/6/x86_64" do
-	owner "root"
-	group "root"
-	mode 0755
-	recursive true
-	action :create
+  mode 0644
+	variables({
+		:localRepoHostRepo => "#{node['hdp_repo']['location']['host']}/repos",
+    :ambariVersion => node['hdp_repo']['ambari']['default_version'],
+    :hdpUtilsVersion => node['hdp_repo']['hdp_utils']['default_version']
+  })
 end
 
-bash "repo-sync-ambari" do
-	user "root"
-	code "reposync -r ambari-1.x -p #{baseRepoDir}/ambari/centos6/1.x/GA --norepopath"
-  returns [0,1]
-end
-bash "create-repo-ambari" do
-	code "createrepo --update #{baseRepoDir}/ambari/centos6/1.x/GA"
+
+remote_file node['hdp_repo']['jdk']['bin'] do
+  source node['hdp_repo']['jdk']['source_bin']
+  mode 0644
+  action :create_if_missing
 end
 
-bash "repo-sync-Ambari-Updates" do
-	user "root"
-	code "reposync -r Updates-ambari-1.x -p #{baseRepoDir}/ambari/centos6/1.x/updates"
-  returns [0,1]
-end
-bash "create-repo-ambari-updates" do
-	code "createrepo --update #{baseRepoDir}/ambari/centos6/1.x/updates"
-end
-
-bash "repo-sync-HDP-UTILS-16" do
-	user "root"
-	code "reposync -r HDP-UTILS-1.1.0.16 -p #{baseRepoDir}/HDP-UTILS-1.1.0.16/repos/centos6 --norepopath"
-  returns [0,1]
-end
-bash "create-repo-HDP-UTILS-16" do
-	code "createrepo --update #{baseRepoDir}/HDP-UTILS-1.1.0.16/repos/centos6"
+directory "#{baseRepoDir}" do
+  owner "root"
+  group "root"
+  mode 0755
+  recursive true
+  action :create
 end
 
-bash "repo-sync-HDP" do
-	user "root"
-	code "reposync -r HDP-1.x -p #{baseRepoDir}/HDP/centos6/1.x/GA --norepopath"
-  returns [0,1]
-end
-bash "create-repo-HDP" do
-	code "createrepo --update #{baseRepoDir}/HDP/centos6/1.x/GA"
+node['hdp_repo']['os_base']['items'].each do |os|
+
+  # AMBARI
+  node['hdp_repo']['ambari']['versions'].each do |version|
+
+    ambariSourceFile = "ambari-#{version}-#{os}.tar.gz"
+
+    # Download
+    remote_file "#{node['hdp_repo']['base_tgz']['dir']}/#{ambariSourceFile}" do
+      source "#{node['hdp_repo']['repo']['public_url']}/ambari/#{os}/#{ambariSourceFile}"
+      mode 0644
+      action :create_if_missing
+    end
+
+    # Extract
+    bash 'extract_ambari' do
+      cwd node['hdp_repo']['base_tgz']['dir']
+      code <<-EOH
+      if [ ! -d #{baseRepoDir}/ambari/#{os}/1.x/updates/#{version} ];
+      then
+        tar xzf #{ambariSourceFile} -C #{baseRepoDir}
+      fi
+      EOH
+    end
+
+  end
+
+# HDP Utils
+  node['hdp_repo']['hdp_utils']['versions'].each do |version|
+
+    utilsSourceFile = "HDP-UTILS-#{version}-#{os}.tar.gz"
+    #http://s3.amazonaws.com/public-repo-1.hortonworks.com/HDP-UTILS-1.1.0.16/repos/centos6/HDP-UTILS-1.1.0.16-centos6.tar.gz
+    # Download
+    remote_file "#{node['hdp_repo']['base_tgz']['dir']}/#{utilsSourceFile}" do
+      source "#{node['hdp_repo']['repo']['public_url']}/HDP-UTILS-#{version}/repos/#{os}/#{utilsSourceFile}"
+      mode 0644
+      action :create_if_missing
+    end
+
+    # Extract
+    bash 'extract_HDP_UTILS' do
+      cwd node['hdp_repo']['base_tgz']['dir']
+      code <<-EOH
+      if [ ! -d #{baseRepoDir}/HDP-UTILS-#{version}/repos/#{os} ];
+      then
+        tar xzf #{utilsSourceFile} -C #{baseRepoDir}
+      fi
+      EOH
+    end
+
+  end
+
+  # HDP 1.3.x
+  node['hdp_repo']['hdp_1.3']['versions'].each do |version|
+
+    hdpSourceFile = "HDP-#{version}-#{os}-rpm.tar.gz"
+
+    # Download
+    remote_file "#{node['hdp_repo']['base_tgz']['dir']}/#{hdpSourceFile}" do
+      source "#{node['hdp_repo']['repo']['public_url']}/HDP/#{os}/#{hdpSourceFile}"
+      mode 0644
+      action :create_if_missing
+    end
+
+    # Extract
+    bash 'extract_HDP_1.3' do
+      cwd node['hdp_repo']['base_tgz']['dir']
+      code <<-EOH
+      if [ ! -d #{baseRepoDir}/HDP/#{os}/1.x/updates/#{version} ];
+      then
+        tar xzf #{hdpSourceFile} -C #{baseRepoDir}
+      fi
+      EOH
+    end
+
+  end
+
+  # HDP 2.0.x
+  node['hdp_repo']['hdp_2.0']['versions'].each do |version|
+
+    hdpSourceFile = "HDP-#{version}-#{os}-rpm.tar.gz"
+
+    # Download
+    remote_file "#{node['hdp_repo']['base_tgz']['dir']}/#{hdpSourceFile}" do
+      source "#{node['hdp_repo']['repo']['public_url']}/HDP/#{os}/#{hdpSourceFile}"
+      mode 0644
+      action :create_if_missing
+    end
+
+    # Extract
+    bash 'extract_HDP_2.0' do
+      cwd node['hdp_repo']['base_tgz']['dir']
+      code <<-EOH
+      if [ ! -d #{baseRepoDir}/HDP/#{os}/2.x/updates/#{version} ];
+      then
+        tar xzf #{hdpSourceFile} -C #{baseRepoDir}
+      fi
+      EOH
+    end
+
+  end
+
 end
 
-bash "repo-sync-HDP-Updates" do
-	user "root"
-	code "reposync -r Updates-HDP-1.x -p #{baseRepoDir}/HDP/centos6/1.x/updates --norepopath"
-  returns [0,1]
-end
 
-bash "create-repo-HDP-Updates-1-3-2" do
-  code "createrepo --update #{baseRepoDir}/HDP/centos6/1.x/updates/1.3.2.0"
-end
-
-bash "create-repo-HDP-Updates-1-3-3" do
-  code "createrepo --update #{baseRepoDir}/HDP/centos6/1.x/updates/1.3.3.0"
-end
-
-bash "repo-sync-HDP2" do
-	user "root"
-	code "reposync -r HDP-2.x -p #{baseRepoDir}/HDP/centos6/2.x/GA --norepopath"
-  returns [0,1]
-end
-
-bash "create-repo-HDP2" do
-	code "createrepo --update #{baseRepoDir}/HDP/centos6/2.x/GA"
-end
-
-bash "repo-sync-HDP2-Updates" do
-	user "root"
-	code "reposync -r Updates-HDP-2.x -p #{baseRepoDir}/HDP/centos6/2.x/updates --norepopath"
-  returns [0,1]
-end
-
-bash "create-repo-HDP2-Updates-2-0-6" do
-	code "createrepo --update #{baseRepoDir}/HDP/centos6/2.x/updates/2.0.6.0"
-end
-
-#bash "repo-sync-epel" do
-#	user "root"
-#	code "reposync -r epel -p #{baseRepoDir}/pub/epel/6/x86_64 --norepopath"
-#	returns [0,1]
-#end
-#bash "create-repo-epel" do
-#	code "createrepo --update #{baseRepoDir}/pub/epel/6/x86_64"
-#end
-
-bash "repo-sync-centos" do
-	user "root"
-	code "reposync -r base -p #{baseRepoDir}/centos/6/os/x86_64 --norepopath"
-	returns [0,1]
-end
-bash "create-repo-centos" do
-	code "createrepo --update #{baseRepoDir}/centos/6/os/x86_64"
-end
-
-bash "repo-sync-centos-updates" do
-	user "root"
-	code "reposync -r updates -p #{baseRepoDir}/centos/6/updates/x86_64 --norepopath"
-	returns [0,1]
-end
-bash "create-repo-centos-updates" do
-	code "createrepo --update #{baseRepoDir}/centos/6/updates/x86_64"
-end
-
-bash "repo-sync-centos-extras" do
-	user "root"
-	code "reposync -r extras -p #{baseRepoDir}/centos/6/extras/x86_64 --norepopath"
-	returns [0,1]
-end
-bash "create-repo-centos-extras" do
-	code "createrepo --update #{baseRepoDir}/centos/6/extras/x86_64"
-end
-
-bash "repo-sync-centos-plus" do
-	user "root"
-	code "reposync -r centosplus -p #{baseRepoDir}/centos/6/centosplus/x86_64 --norepopath"
-end
-bash "create-repo-centosplus" do
-	code "createrepo --update #{baseRepoDir}/centos/6/centosplus/x86_64"
-end
-
-bash "repo-sync-centos-contrib" do
-	user "root"
-	code "reposync -r contrib -p #{baseRepoDir}/centos/6/contrib/x86_64 --norepopath"
-end
-bash "create-repo-centos-contrib" do
-	code "createrepo --update #{baseRepoDir}/centos/6/contrib/x86_64"
-end
 
 directory "#{baseRepoDir}/ambari/centos6/RPM-GPG-KEY" do
-	owner "root"
-	group "root"
-	mode 0755
-	recursive true
-	action :create
+  owner "root"
+  group "root"
+  mode 0755
+  recursive true
+  action :create
 end
 
 remote_file "#{baseRepoDir}/ambari/centos6/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins" do
-	source "http://public-repo-1.hortonworks.com/ambari/centos6/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins"
-	mode '00644'
-	action :create_if_missing
+  source "http://public-repo-1.hortonworks.com/ambari/centos6/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins"
+  mode 0644
+  action :create_if_missing
 end
 
 

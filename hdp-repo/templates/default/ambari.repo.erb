@@ -1,14 +1,14 @@
 [ambari-1.x]
 name=Ambari 1.x
 baseurl=http://<%= @localRepoHostRepo %>/ambari/centos6/1.x/GA
-gpgcheck=1
+gpgcheck=0
 gpgkey=http://<%= @localRepoHostRepo %>/ambari/centos6/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
 enabled=1
 priority=1
 
-[HDP-UTILS-1.1.0.16]
-name=Hortonworks Data Platform Utils Version - HDP-UTILS-1.1.0.16
-baseurl=http://<%= @localRepoHostRepo %>/HDP-UTILS-1.1.0.16/repos/centos6
+[HDP-UTILS-<%= @hdpUtilsVersion %>]
+name=Hortonworks Data Platform Utils Version - HDP-UTILS-<%= @hdpUtilsVersion %>
+baseurl=http://<%= @localRepoHostRepo %>/HDP-UTILS-<%= @hdpUtilsVersion %>/repos/centos6
 gpgcheck=0
 gpgkey=http://<%= @localRepoHostRepo %>/ambari/centos6/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
 enabled=1
@@ -16,8 +16,8 @@ priority=1
 
 [Updates-ambari-1.x]
 name=ambari-1.x - Updates
-baseurl=http://<%= @localRepoHostRepo %>/ambari/centos6/1.x/updates
-gpgcheck=1
+baseurl=http://<%= @localRepoHostRepo %>/ambari/centos6/1.x/updates/<%= @ambariVersion %>
+gpgcheck=0
 gpgkey=http://<%= @localRepoHostRepo %>/ambari/centos6/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
 enabled=1
 priority=1

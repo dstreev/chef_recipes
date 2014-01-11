@@ -8,4 +8,4 @@ default['ambari']['repo']['local_url'] = 'undefined'
 
 # Specify an alternate JDK.
 default['ambari']['jdk']['alt'] = false
-default['ambari']['jdk']['home'] = '/usr/lib/jvm/jdk1.7.0_45'
+default['ambari']['jdk']['home'] = '/usr/lib/jvm/jdk1.7.0_51'
