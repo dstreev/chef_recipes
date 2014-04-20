@@ -72,6 +72,47 @@ remote_file node['hdp_repo']['jdk']['bin'] do
   action :create_if_missing
 end
 
+remote_file node['hdp_repo']['jdk7']['tgz'] do
+  source node['hdp_repo']['jdk7']['source_tgz']
+  owner "root"
+  owner "root"
+  mode 0644
+  action :create_if_missing
+end
+
+remote_file node['hdp_repo']['ext-2_2']['zip'] do
+  source node['hdp_repo']['ext-2_2']['source']
+  owner "root"
+  owner "root"
+  mode 0644
+  action :create_if_missing
+end
+
+remote_file node['hdp_repo']['mysql_connector']['zip'] do
+  source node['hdp_repo']['mysql_connector']['source']
+  owner "root"
+  owner "root"
+  mode 0644
+  action :create_if_missing
+end
+
+remote_file node['hdp_repo']['jce_policy-6']['zip'] do
+  source node['hdp_repo']['jce_policy-6']['source']
+  owner "root"
+  owner "root"
+  mode 0644
+  action :create_if_missing
+end
+
+remote_file node['hdp_repo']['jce_policy-7']['zip'] do
+  source node['hdp_repo']['jce_policy-7']['source']
+  owner "root"
+  owner "root"
+  mode 0644
+  action :create_if_missing
+end
+
+
 template "#{node['hdp_repo']['yum_repos']['ambari']}" do
 	source "ambari.repo.erb"
 	owner "root"
@@ -198,6 +239,54 @@ node['hdp_repo']['os_base']['items'].each do |os|
       fi
       EOH
     end
+
+  end
+
+  # HDP 2.1.x
+  node['hdp_repo']['hdp_2.1']['versions'].each do |version|
+
+	version['GA'].each do |ga|
+	    hdpSourceFile = "HDP-#{version}-#{os}-rpm.tar.gz"
+
+    	# Download
+	    remote_file "#{node['hdp_repo']['base_tgz']['dir']}/#{hdpSourceFile}" do
+    	  source "#{node['hdp_repo']['repo']['public_url']}/HDP/#{os}/#{hdpSourceFile}"
+	      mode 0644
+    	  action :create_if_missing
+	    end
+
+    	# Extract
+	    bash 'extract_HDP_2.1_GA' do
+	      cwd node['hdp_repo']['base_tgz']['dir']
+	      code <<-EOH
+	      if [ ! -d #{baseRepoDir}/HDP/#{os}/2.x/GA/#{version} ];
+	      then
+	        tar xzf #{hdpSourceFile} -C #{baseRepoDir}
+	      fi
+	      EOH
+    	end
+	end
+	version['updates'].each do |ga|
+	    hdpSourceFile = "HDP-#{version}-#{os}-rpm.tar.gz"
+
+    	# Download
+	    remote_file "#{node['hdp_repo']['base_tgz']['dir']}/#{hdpSourceFile}" do
+    	  source "#{node['hdp_repo']['repo']['public_url']}/HDP/#{os}/#{hdpSourceFile}"
+	      mode 0644
+    	  action :create_if_missing
+	    end
+
+    	# Extract
+	    bash 'extract_HDP_2.1_updates' do
+	      cwd node['hdp_repo']['base_tgz']['dir']
+	      code <<-EOH
+	      if [ ! -d #{baseRepoDir}/HDP/#{os}/2.x/updates/#{version} ];
+	      then
+	        tar xzf #{hdpSourceFile} -C #{baseRepoDir}
+	      fi
+	      EOH
+    	end
+	end
 
   end
 
