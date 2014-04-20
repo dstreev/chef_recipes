@@ -242,52 +242,50 @@ node['hdp_repo']['os_base']['items'].each do |os|
 
   end
 
-  # HDP 2.1.x
-  node['hdp_repo']['hdp_2.1']['versions'].each do |version|
+  # HDP 2.1.x GA
+  node['hdp_repo']['hdp_2.1']['versions']['GA'].each do |version|
 
-	version['GA'].each do |ga|
-	    hdpSourceFile = "HDP-#{version}-#{os}-rpm.tar.gz"
+    hdpSourceFile = "HDP-#{version}-#{os}-rpm.tar.gz"
 
-    	# Download
-	    remote_file "#{node['hdp_repo']['base_tgz']['dir']}/#{hdpSourceFile}" do
-    	  source "#{node['hdp_repo']['repo']['public_url']}/HDP/#{os}/#{hdpSourceFile}"
-	      mode 0644
-    	  action :create_if_missing
-	    end
+   	# Download
+    remote_file "#{node['hdp_repo']['base_tgz']['dir']}/#{hdpSourceFile}" do
+   	  source "#{node['hdp_repo']['repo']['public_url']}/HDP/#{os}/#{hdpSourceFile}"
+      mode 0644
+   	  action :create_if_missing
+    end
+   	# Extract
+    bash 'extract_HDP_2.1_GA' do
+      cwd node['hdp_repo']['base_tgz']['dir']
+      code <<-EOH
+      if [ ! -d #{baseRepoDir}/HDP/#{os}/2.x/GA/#{version} ];
+      then
+        tar xzf #{hdpSourceFile} -C #{baseRepoDir}
+      fi
+      EOH
+   	end
+  end
 
-    	# Extract
-	    bash 'extract_HDP_2.1_GA' do
-	      cwd node['hdp_repo']['base_tgz']['dir']
-	      code <<-EOH
-	      if [ ! -d #{baseRepoDir}/HDP/#{os}/2.x/GA/#{version} ];
-	      then
-	        tar xzf #{hdpSourceFile} -C #{baseRepoDir}
-	      fi
-	      EOH
-    	end
-	end
-	version['updates'].each do |ga|
-	    hdpSourceFile = "HDP-#{version}-#{os}-rpm.tar.gz"
+  # HDP 2.1.x updates
+  node['hdp_repo']['hdp_2.1']['versions']['updates'].each do |version|
 
-    	# Download
-	    remote_file "#{node['hdp_repo']['base_tgz']['dir']}/#{hdpSourceFile}" do
-    	  source "#{node['hdp_repo']['repo']['public_url']}/HDP/#{os}/#{hdpSourceFile}"
-	      mode 0644
-    	  action :create_if_missing
-	    end
+    hdpSourceFile = "HDP-#{version}-#{os}-rpm.tar.gz"
 
-    	# Extract
-	    bash 'extract_HDP_2.1_updates' do
-	      cwd node['hdp_repo']['base_tgz']['dir']
-	      code <<-EOH
-	      if [ ! -d #{baseRepoDir}/HDP/#{os}/2.x/updates/#{version} ];
-	      then
-	        tar xzf #{hdpSourceFile} -C #{baseRepoDir}
-	      fi
-	      EOH
-    	end
-	end
-
+   	# Download
+    remote_file "#{node['hdp_repo']['base_tgz']['dir']}/#{hdpSourceFile}" do
+   	  source "#{node['hdp_repo']['repo']['public_url']}/HDP/#{os}/#{hdpSourceFile}"
+      mode 0644
+   	  action :create_if_missing
+    end
+   	# Extract
+    bash 'extract_HDP_2.1_GA' do
+      cwd node['hdp_repo']['base_tgz']['dir']
+      code <<-EOH
+      if [ ! -d #{baseRepoDir}/HDP/#{os}/2.x/updates/#{version} ];
+      then
+        tar xzf #{hdpSourceFile} -C #{baseRepoDir}
+      fi
+      EOH
+   	end
   end
 
 end
